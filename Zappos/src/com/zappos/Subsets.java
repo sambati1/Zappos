@@ -7,6 +7,11 @@ import java.util.Set;
 
 public class Subsets {
 	public static final Set<ArrayList<String>> requiredProductsList = new HashSet<ArrayList<String>>();
+	
+	//Product list contains all the productIds retrieved 
+	//Find the subsets of Size numOfProducts and filtering the subsets whose products are sum up to
+	//close to total cost.
+	
 	public static ArrayList<ArrayList<String>> findSubsets(
 			List<String> productslist, int index, int numberOfProducts,
 			double totalCost) {
@@ -45,23 +50,16 @@ public class Subsets {
 							}
 						}
 					}
-					/*if( sum ==  totalCost){
-						requiredProductsList.add(newSubSet);
-					}*/
+					
 					if (( sum >= (totalCost - 10) ) && (sum <= (totalCost + 10))) {
 						requiredProductsList.add(newSubSet);
 					}
-					/*for (int j = 0; j < newSubSet.size(); j++) {
-
-						System.out.println(newSubSet.get(j));
-					}*/
+					
 				}
 				if (newSubSet.size() > numberOfProducts){
 					return allSubSets;
 				}
-				//System.out.println(".........");
 			}
-			//System.out.println("-----------------------------");
 			allSubSets.addAll(moreSubSets);
 		}
 

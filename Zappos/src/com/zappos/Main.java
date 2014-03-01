@@ -38,6 +38,7 @@ public class Main {
 				int numOfProducts = Integer.parseInt(sc.nextLine());
 				System.out.println("Enter total cost:");
 				double totalCost = Double.parseDouble(sc.nextLine());
+				// Method to compute results.
 				computeResults(numOfProducts, totalCost);
 				break;
 			case 2:
@@ -47,35 +48,40 @@ public class Main {
 				System.out.println("Exiting Application");
 				System.exit(0);
 			}
+			System.out.println("Enter 1 : start \t 2:Exit");
 		}
 
 	}
 
+	@SuppressWarnings("null")
 	public static void computeResults(int numOfProducts, double totalCost) {
 
 		try {
 			URL urldemo;
 			StringBuffer jsonString = new StringBuffer();
 			JSONArray products = new JSONArray();
-			for (int i = 0; i < 20; i++) {
-
+			// Restricted to 20 calls, 
+			for (int i = 0; i < 10; i++) {
+				// Retrieves 100 results per page.
 				urldemo = new URL(
 						"http://api.zappos.com/Search?page="
 								+ i
 								+ "&limit=100&key=12c3302e49b9b40ab8a222d7cf79a69ad11ffd78");
-
+				// calling api and retrieving the results.
 				URLConnection yc = urldemo.openConnection();
+				
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						yc.getInputStream()));
 				String inputLine;
-
+				// Retrieving the JSON results and parsing them to get product details.
 				while ((inputLine = in.readLine()) != null) {
-					// System.out.println(inputLine);
 					jsonString.append(inputLine);
 				}
 				in.close();
 				String response = jsonString.toString();
 				JSONObject json = new JSONObject(response);
+				// Retrieves all the product details in the results array.
+				//
 				JSONArray temp = json.getJSONArray("results");
 				for (int j = 0; j < temp.length(); j++) {
 					JSONObject product = (JSONObject) temp.get(j);
@@ -85,6 +91,7 @@ public class Main {
 			}
 
 			for (int i = 0; i < products.length(); i++) {
+				// Retrieving details and storing them in a map and list for further processing.
 				JSONObject product = (JSONObject) products.get(i);
 				String productId = product.getString("productId");
 				String priceString = product.getString("price");
@@ -92,6 +99,7 @@ public class Main {
 				String productUrl = product.getString("productUrl");
 				StringTokenizer st = new StringTokenizer(priceString, "$");
 				double price = Double.parseDouble((String) st.nextElement());
+				// Stores details only less than the total cost.
 				if(price < totalCost){
 				Product p = new Product();
 				p.setPrice(price);
@@ -106,8 +114,9 @@ public class Main {
 
 			Subsets s = new Subsets();
 			int cnt = 0;
-			Subsets.findSubsets(productsList, 0, 3, 150);
+			Subsets.findSubsets(productsList, 0, numOfProducts, totalCost);
 			Set<ArrayList<String>> retrivedProdutsSet = Subsets.requiredProductsList;
+			// Print the results. 
 			if (retrivedProdutsSet != null || retrivedProdutsSet.size() > 0) {
 				Iterator<ArrayList<String>> iterator = retrivedProdutsSet
 						.iterator();
@@ -115,7 +124,8 @@ public class Main {
 					ArrayList<String> productIdsList = iterator.next();
 					System.out.print(++cnt + ".");
 					for (int j = 0; j < productIdsList.size(); j++) {
-						System.out.print(productIdsList.get(j) + "\t \t");
+						String productName = productsMap.get(productIdsList.get(j)).getProductName();
+						System.out.print(productIdsList.get(j)+","+productName + "\t \t");
 					}
 					System.out.println();
 				}
